@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firebase Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      text-align: center;
+      padding-top: 60px;
+    }
+    .box {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      margin: auto;
+      border-radius: 12px;
+      width: 300px;
+    }
+    input {
+      padding: 10px;
+      margin: 8px 0;
+      width: 90%;
+      border: none;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px;
+      margin: 8px 4px;
+      width: 100px;
+      border: none;
+      border-radius: 6px;
+      background-color: #00ffcc;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #logout {
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Login / Signup</h2>
+    <input type="email" id="email" placeholder="Enter email"><br>
+    <input type="password" id="password" placeholder="Enter password"><br>
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+    <div id="logout">
+      <p>Welcome, <span id="user-email"></span></p>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <p id="message"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // ✅ Import Firebase SDK (v9 Modular)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+    // ✅ Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyByWJ-maqxgyuyo79DJab8QbatAr7Rq-8w",
+      authDomain: "fir-a854c.firebaseapp.com",
+      projectId: "fir-a854c",
+      storageBucket: "fir-a854c.firebasestorage.app",
+      messagingSenderId: "39658546704",
+      appId: "1:39658546704:web:42c5190755d451cbf98c95",
+      measurementId: "G-KG4XS7C5Y0"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // ✅ Signup function
+    window.signup = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          document.getElementById("message").innerText = "✅ Signup successful!";
+        })
+        .catch((error) => {
+          document.getElementById("message").innerText = "❌ " + error.message;
+        });
+    };
+
+    // ✅ Login function
+    window.login = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          document.getElementById("user-email").innerText = user.email;
+          document.getElementById("logout").style.display = "block";
+          document.getElementById("message").innerText = "✅ Login successful!";
+        })
+        .catch((error) => {
+          document.getElementById("message").innerText = "❌ " + error.message;
+        });
+    };
+
+    // ✅ Logout function
+    window.logout = () => {
+      signOut(auth)
+        .then(() => {
+          document.getElementById("logout").style.display = "none";
+          document.getElementById("message").innerText = "🔒 Logged out.";
+        });
+    };
+
+    // ✅ Auth state monitor
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("logout").style.display = "block";
+        document.getElementById("user-email").innerText = user.email;
+      } else {
+        document.getElementById("logout").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
